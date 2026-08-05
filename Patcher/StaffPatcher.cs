@@ -46,6 +46,12 @@ internal partial class Patcher
 
             Weapon? patchedStaff = null;
 
+            if (staff.BasicStats?.Weight != 5.0f)
+            {
+                patchedStaff ??= _state.PatchMod.Weapons.GetOrAddAsOverride(staff);
+                (patchedStaff.BasicStats ??= new WeaponBasicStats()).Weight = 5.0f;
+            }
+
             var expectedEnchantAmount = StaffEnchantAmounts(staffEnchantInfo.SkillLevel);
 
             if (expectedEnchantAmount != staff.EnchantmentAmount)
