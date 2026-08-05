@@ -18,8 +18,7 @@ internal partial class Patcher
             .Where(x => _config.ExcludedScrolls.All(y => x.FormKey != y.FormKey))
             .Where(x => !ExcludedScrollMods.Contains(x.FormKey.ModKey))
             .Where(x => !ExcludedScrollKeys.Contains(x.FormKey))
-            .Where(x => x.EditorID is { } editorId &&
-                        !editorId.StartsWith("MAG_"));
+            .Where(x => x.EditorID is { } editorId);
 
         foreach (var scroll in scrolls)
         {

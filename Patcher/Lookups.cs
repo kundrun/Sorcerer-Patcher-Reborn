@@ -141,7 +141,10 @@ internal partial class Patcher
         Skyrim.Scroll.MGR21ScrollAlteration.FormKey,
         Skyrim.Scroll.MGR21ScrollRestoration.FormKey,
         Skyrim.Scroll.MGR21ScrollConjuration.FormKey,
-        Skyrim.Scroll.MGR21ScrollMagicka.FormKey
+        Skyrim.Scroll.MGR21ScrollMagicka.FormKey,
+        // Skill calculation for these items is broken - Mysticism uses MGEF costs in an unusual way.
+        Skyrim.Scroll.RallyScroll.FormKey,
+        Skyrim.Scroll.CallToArmsScroll.FormKey
     };
 
     private static uint ScrollValues(uint skillLevel) =>

@@ -22,7 +22,6 @@ internal partial class Patcher
             .Where(x => !ExcludedStaffMods.Contains(x.FormKey.ModKey))
             .Where(x => !ExcludedStaffKeys.Contains(x.FormKey))
             .Where(x => x.EditorID is { } editorId &&
-                        !editorId.StartsWith("MAG_") &&
                         !editorId.Contains("Template"))
             .Where(x => !x.MajorFlags.HasFlag(Weapon.MajorFlag.NonPlayable))
             .Where(x => x.HasKeyword(FormKeys.KYWD.WeapTypeStaff))
