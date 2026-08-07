@@ -29,7 +29,13 @@ internal partial class Patcher
 
     private void CreateStaffRecipe(StaffInfo staffInfo, IConstructibleObjectGetter originalRecipe)
     {
-        var recipeEditorId = originalRecipe.EditorID + "Alt";
+        var extractedId = staffInfo.Name
+            .Replace("Staff of the ", "")
+            .Replace("Staff of ",     "")
+            .Replace(" ",             "")
+            .Replace("'",             "");
+
+        var recipeEditorId = "MAG_RecipeStaff" + extractedId + "Alt";
 
         if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out _))
         {

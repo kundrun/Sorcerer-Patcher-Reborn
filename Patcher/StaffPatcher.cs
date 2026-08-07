@@ -42,7 +42,7 @@ internal partial class Patcher
                 }
                 staffEnchantInfoLookup.Add(staff.ObjectEffect.FormKey, staffEnchantInfo);
             }
-            staffInfoLookup.Add(staff.FormKey, new StaffInfo(staffEnchantInfo.SkillLevel));
+            staffInfoLookup.Add(staff.FormKey, new StaffInfo(staff.Name?.String ?? string.Empty, staffEnchantInfo.SkillLevel));
 
             Weapon? patchedStaff = null;
 
@@ -78,7 +78,7 @@ internal partial class Patcher
             : null;
     }
 
-    private record StaffInfo(uint SkillLevel);
+    private record StaffInfo(string Name, uint SkillLevel);
 
     private record StaffEnchantInfo(IObjectEffectGetter Enchant, uint SkillLevel);
 }
