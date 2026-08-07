@@ -159,7 +159,7 @@ internal partial class Patcher
                 return null;
             }
 
-            extractedId += "DUP";
+            extractedId += "_" + scrollKey.ModKey.MakeUniqueModIdentifier();
             recipeEditorId = "MAG_RecipeScroll" + extractedId;
 
             if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out _))

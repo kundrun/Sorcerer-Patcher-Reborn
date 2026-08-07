@@ -20,14 +20,15 @@ internal partial class Patcher
 
         foreach (var originalRecipe in originalRecipes)
         {
-            if (staffInfoLookup.TryGetValue(originalRecipe.CreatedObject.FormKey, out var staffInfo))
+            var staffKey = originalRecipe.CreatedObject.FormKey;
+            if (staffInfoLookup.TryGetValue(staffKey, out var staffInfo))
             {
-                CreateStaffRecipe(staffInfo, originalRecipe);
+                CreateStaffRecipe(staffKey, staffInfo, originalRecipe);
             }
         }
     }
 
-    private void CreateStaffRecipe(StaffInfo staffInfo, IConstructibleObjectGetter originalRecipe)
+    private void CreateStaffRecipe(FormKey staffKey, StaffInfo staffInfo, IConstructibleObjectGetter originalRecipe)
     {
         var extractedId = staffInfo.Name
             .Replace("Staff of the ", "")
@@ -39,13 +40,13 @@ internal partial class Patcher
 
         if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out var duplicateRecipe))
         {
-            if (duplicateRecipe.CreatedObject.FormKey == originalRecipe.CreatedObject.FormKey)
+            if (duplicateRecipe.CreatedObject.FormKey == staffKey)
             {
                 Console.WriteLine($">>> Skipped staff recipe {recipeEditorId} because it already exists.");
                 return;
             }
 
-            recipeEditorId += "DUP";
+            recipeEditorId += "_" + staffKey.ModKey.MakeUniqueModIdentifier();
 
             if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out _))
             {
@@ -58,7 +59,7 @@ internal partial class Patcher
 
         var recipe = _state.PatchMod.ConstructibleObjects.AddNew(recipeEditorId);
         recipe.WorkbenchKeyword = FormKeys.KYWD.StaffEnchanterWorkbenchSorcerer.ToNullableLink<IKeywordGetter>();
-        recipe.CreatedObject = originalRecipe.CreatedObject.FormKey.ToNullableLink<IConstructibleGetter>();
+        recipe.CreatedObject = staffKey.ToNullableLink<IConstructibleGetter>();
         recipe.CreatedObjectCount = originalRecipe.CreatedObjectCount;
         recipe.Conditions.AddRange(originalRecipe.Conditions.Select(x => x.DeepCopy()));
         if (originalRecipe.Items != null)

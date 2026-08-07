@@ -9,6 +9,13 @@ internal static class Utilities
         return ModKey.FromNameAndExtension(modKey).MakeFormKey(formId);
     }
 
+    public static string MakeUniqueModIdentifier(this ModKey modKey)
+    {
+        return new string(modKey.Name
+                              .TakeWhile((c, i) => i < 4 && char.IsAsciiLetterOrDigit(c))
+                              .ToArray()).ToUpper();
+    }
+
     public static IEnumerable<TSource> WhereIf<TSource>(
         this IEnumerable<TSource> source, Func<TSource, bool> predicate, Func<bool> condition)
     {
