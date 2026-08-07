@@ -48,6 +48,13 @@ internal partial class Patcher
 
         if (_state.LinkCache.TryResolve<IBookGetter>(notesEditorId, out var existingNotes))
         {
+            if (existingNotes.Value != ScrollResearchNotesValues(scrollInfo.SkillLevel))
+            {
+                var patchedNotes = _state.PatchMod.Books.GetOrAddAsOverride(existingNotes);
+                patchedNotes.Value = ScrollResearchNotesValues(scrollInfo.SkillLevel);
+                return patchedNotes;
+            }
+
             Console.WriteLine($">>> Skipped scroll research notes {notesEditorId} because it already exists.");
             return existingNotes;
         }
