@@ -37,10 +37,21 @@ internal partial class Patcher
 
         var recipeEditorId = "MAG_RecipeStaff" + extractedId + "Alt";
 
-        if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out _))
+        if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out var duplicateRecipe))
         {
-            Console.WriteLine($">>> Skipped staff recipe {recipeEditorId} because it already exists.");
-            return;
+            if (duplicateRecipe.CreatedObject.FormKey == originalRecipe.CreatedObject.FormKey)
+            {
+                Console.WriteLine($">>> Skipped staff recipe {recipeEditorId} because it already exists.");
+                return;
+            }
+
+            recipeEditorId += "DUP";
+
+            if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out _))
+            {
+                Console.WriteLine($">>> Skipped staff recipe {recipeEditorId} because it already exists.");
+                return;
+            }
         }
 
         var recipeDetails = StaffRecipeDetails(staffInfo.SkillLevel);

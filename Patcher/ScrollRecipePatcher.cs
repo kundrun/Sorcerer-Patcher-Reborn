@@ -13,10 +13,14 @@ internal partial class Patcher
             var extractedName = scrollInfo.Name.Replace("Scroll of the ", "").Replace("Scroll of ", "");
             var extractedId = extractedName.Replace(" ", "").Replace("'", "");
 
+            var recipe = CreateScrollRecipe(scrollKey, scrollInfo, ref extractedId);
             var researchPerk = CreateScrollResearchPerk(extractedName, extractedId);
             var researchNotes = CreateScrollResearchNotes(extractedName, extractedId, scrollInfo, researchPerk);
             CreateScrollBreakdownRecipe(scrollKey, extractedId, researchPerk, researchNotes);
-            CreateScrollRecipe(scrollKey, scrollInfo, extractedId, researchPerk);
+            if (recipe != null)
+            {
+                AttachScrollRecipeResearchPerk(recipe, researchPerk);
+            }
         }
     }
 
@@ -143,14 +147,26 @@ internal partial class Patcher
         Console.WriteLine($">>> Created scroll breakdown recipe {recipe.EditorID}.");
     }
 
-    private void CreateScrollRecipe(FormKey scrollKey, ScrollInfo scrollInfo, string extractedId, IPerkGetter perk)
+    private ConstructibleObject? CreateScrollRecipe(FormKey scrollKey, ScrollInfo scrollInfo, ref string extractedId)
     {
         var recipeEditorId = "MAG_RecipeScroll" + extractedId;
 
-        if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out _))
+        if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out var duplicateRecipe))
         {
-            Console.WriteLine($">>> Skipped scroll recipe {recipeEditorId} because it already exists.");
-            return;
+            if (duplicateRecipe.CreatedObject.FormKey == scrollKey)
+            {
+                Console.WriteLine($">>> Skipped scroll recipe {recipeEditorId} because it already exists.");
+                return null;
+            }
+
+            extractedId += "DUP";
+            recipeEditorId = "MAG_RecipeScroll" + extractedId;
+
+            if (_state.LinkCache.TryResolve<IConstructibleObjectGetter>(recipeEditorId, out _))
+            {
+                Console.WriteLine($">>> Skipped staff recipe {recipeEditorId} because it already exists.");
+                return null;
+            }
         }
 
         var recipeIngredients = ScrollRecipeDetails(scrollInfo.SkillLevel);
@@ -179,6 +195,12 @@ internal partial class Patcher
             }
         ];
 
+        Console.WriteLine($">>> Created scroll recipe {recipe.EditorID}.");
+        return recipe;
+    }
+
+    private static void AttachScrollRecipeResearchPerk(ConstructibleObject recipe, IPerkGetter perk)
+    {
         var hasPerkConditionData = new HasPerkConditionData();
         hasPerkConditionData.Perk.Link.SetTo(perk);
         recipe.Conditions.Add(new ConditionFloat
@@ -187,7 +209,5 @@ internal partial class Patcher
             ComparisonValue = 1.0f,
             Data = hasPerkConditionData
         });
-
-        Console.WriteLine($">>> Created scroll recipe {recipe.EditorID}.");
     }
 }
