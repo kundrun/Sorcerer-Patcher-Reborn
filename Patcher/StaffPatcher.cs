@@ -48,10 +48,11 @@ internal partial class Patcher
 
             if (staff.Data?.Skill is { } skill && StaffSkillKeywords.TryGetValue(skill, out var expectedSkillKeyword))
             {
-                if (!staff.HasKeyword(expectedSkillKeyword))
+                if (IsMissingKeyword(staff, expectedSkillKeyword, out var existingStaffKeywords))
                 {
                     patchedStaff ??= _state.PatchMod.Weapons.GetOrAddAsOverride(staff);
-                    (patchedStaff.Keywords ??= []).Add(expectedSkillKeyword);
+                    patchedStaff.Keywords = [ .. existingStaffKeywords ];
+                    patchedStaff.Keywords.Add(expectedSkillKeyword);
                 }
             }
 
@@ -85,6 +86,34 @@ internal partial class Patcher
         return primaryEffect != null
             ? new StaffEnchantInfo(staffEnchant!, primaryEffect.MinimumSkillLevel)
             : null;
+    }
+
+    private bool IsMissingKeyword(IWeaponGetter staff, FormKey expectedKeyword,
+        [MaybeNullWhen(false)] out IEnumerable<IFormLinkGetter<IKeywordGetter>> existingKeywords)
+    {
+        existingKeywords = null;
+
+        if (staff.Keywords != null)
+        {
+            if (!staff.HasKeyword(expectedKeyword))
+            {
+                existingKeywords = staff.Keywords;
+            }
+        }
+        else
+        {
+            var staffTemplate = TryResolve(staff.Template);
+            if (staffTemplate?.Keywords == null)
+            {
+                existingKeywords = [ ];
+            }
+            else if (!staffTemplate.HasKeyword(expectedKeyword))
+            {
+                existingKeywords = staffTemplate.Keywords;
+            }
+        }
+
+        return existingKeywords != null;
     }
 
     private record StaffInfo(uint SkillLevel);
