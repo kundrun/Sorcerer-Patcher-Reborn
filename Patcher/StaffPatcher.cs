@@ -52,6 +52,7 @@ internal partial class Patcher
                 {
                     patchedStaff ??= _state.PatchMod.Weapons.GetOrAddAsOverride(staff);
                     patchedStaff.Keywords = [ .. existingStaffKeywords ];
+                    patchedStaff.Keywords.Remove(StaffSkillKeywords.Values);
                     patchedStaff.Keywords.Add(expectedSkillKeyword);
                 }
             }
