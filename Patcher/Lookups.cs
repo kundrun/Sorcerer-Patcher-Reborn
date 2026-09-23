@@ -154,6 +154,16 @@ internal partial class Patcher
         Skyrim.Scroll.MGR21ScrollMagicka.FormKey
     };
 
+    private static readonly IReadOnlyDictionary<ActorValue, FormKey> ScrollSkillKeywords = new Dictionary<ActorValue, FormKey>
+    {
+        // Injected records from Mysticism.esp into Update.esm
+        { ActorValue.Alteration, Update.ModKey.MakeFormKey(0xADA151) },
+        { ActorValue.Conjuration, Update.ModKey.MakeFormKey(0xADA152) },
+        { ActorValue.Destruction, Update.ModKey.MakeFormKey(0xADA153) },
+        { ActorValue.Illusion, Update.ModKey.MakeFormKey(0xADA154) },
+        { ActorValue.Restoration, Update.ModKey.MakeFormKey(0xADA155) }
+    };
+
     private static uint ScrollValues(uint skillLevel) =>
         skillLevel switch
         {
@@ -162,18 +172,6 @@ internal partial class Patcher
             < 75  => 55,
             < 100 => 90,
             _     => 160
-        };
-
-    private static FormKey ScrollSkills(ActorValue magicSkill) =>
-        magicSkill switch
-        {
-            // Injected records from Mysticism.esp into Update.esm
-            ActorValue.Alteration  => Update.ModKey.MakeFormKey(0xADA151),
-            ActorValue.Conjuration => Update.ModKey.MakeFormKey(0xADA152),
-            ActorValue.Destruction => Update.ModKey.MakeFormKey(0xADA153),
-            ActorValue.Illusion    => Update.ModKey.MakeFormKey(0xADA154),
-            ActorValue.Restoration => Update.ModKey.MakeFormKey(0xADA155),
-            _                      => FormKey.Null
         };
 
     private static uint ScrollResearchNotesValues(uint skillLevel) =>

@@ -39,12 +39,13 @@ internal partial class Patcher
                 patchedScroll.Value = expectedValue;
             }
 
-            var expectedSkill = ScrollSkills(scrollInfo.MagicSkill);
-
-            if (!expectedSkill.IsNull && !scroll.HasKeyword(expectedSkill))
+            if (ScrollSkillKeywords.TryGetValue(scrollInfo.MagicSkill, out var expectedSkillKeyword) &&
+                !scroll.HasKeyword(expectedSkillKeyword))
             {
                 patchedScroll ??= _state.PatchMod.Scrolls.GetOrAddAsOverride(scroll);
-                (patchedScroll.Keywords ??= []).Add(expectedSkill);
+                patchedScroll.Keywords ??= [ ];
+                patchedScroll.Keywords.Remove(ScrollSkillKeywords.Values);
+                patchedScroll.Keywords.Add(expectedSkillKeyword);
             }
 
             if (patchedScroll != null)
