@@ -81,6 +81,16 @@ internal partial class Patcher
         MakeFormKey("Wyrmstooth.esp",                       0x8F793C)  // Alka's Staff
     };
 
+    private static readonly IReadOnlyDictionary<Skill, FormKey> StaffSkillKeywords = new Dictionary<Skill, FormKey>
+    {
+        // Injected records from Mysticism.esp into Update.esm
+        { Skill.Alteration, Update.ModKey.MakeFormKey(0xADA156) },
+        { Skill.Conjuration, Update.ModKey.MakeFormKey(0xADA157) },
+        { Skill.Destruction, Update.ModKey.MakeFormKey(0xADA158) },
+        { Skill.Illusion, Update.ModKey.MakeFormKey(0xADA159) },
+        { Skill.Restoration, Update.ModKey.MakeFormKey(0xADA160) }
+    };
+
     private static ushort StaffEnchantAmounts(uint skillLevel) =>
         skillLevel switch
         {

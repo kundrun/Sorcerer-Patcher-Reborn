@@ -46,6 +46,15 @@ internal partial class Patcher
 
             Weapon? patchedStaff = null;
 
+            if (staff.Data?.Skill is { } skill && StaffSkillKeywords.TryGetValue(skill, out var expectedSkillKeyword))
+            {
+                if (!staff.HasKeyword(expectedSkillKeyword))
+                {
+                    patchedStaff ??= _state.PatchMod.Weapons.GetOrAddAsOverride(staff);
+                    (patchedStaff.Keywords ??= []).Add(expectedSkillKeyword);
+                }
+            }
+
             var expectedEnchantAmount = StaffEnchantAmounts(staffEnchantInfo.SkillLevel);
 
             if (expectedEnchantAmount != staff.EnchantmentAmount)
